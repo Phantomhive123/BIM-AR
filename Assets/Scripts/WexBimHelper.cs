@@ -116,7 +116,7 @@ public class WexBimHelper
 
                             BimShape shape = new BimShape(ifcProductLabel, instanceTypeId, instanceLabel, styleId, transform);
                             thisShape.Add(shape);
-                            var p = products.Find(product => product.productLabel == ifcProductLabel);
+                            var p = products.Find(product => product.entityLabel == ifcProductLabel);
                             p.shapes.Add(shape);
                         }
                         var triangulation = br.ReadShapeTriangulation();
@@ -135,7 +135,7 @@ public class WexBimHelper
                         XbimShapeTriangulation triangulation = br.ReadShapeTriangulation();
                         
                         BimShape shape = new BimShape(ifcProductLabel, instanceTypeId, instanceLabel, styleId);
-                        var p = products.Find(product => product.productLabel == ifcProductLabel);
+                        var p = products.Find(product => product.entityLabel == ifcProductLabel);
                         p.shapes.Add(shape);
                         var tri = new BimTriangulation(triangulation, scale, offset);
                         shape.triangulations.Add(tri);
@@ -144,5 +144,15 @@ public class WexBimHelper
             }
         }
         ModelCreater.CreateModel(products, colors);
+
+        if(tem.EndsWith(".wexBIM"))
+        {
+            var ifcPath = tem.Replace(".wexBIM", ".ifc");
+            var projectData = BimHelper.GetBimSpatialStructure(ifcPath);
+            ModelCreater.GenerateSpatialStructure(projectData);
+            projectData.transform.rotation = Quaternion.Euler(-90, 0, 0);
+        }
     }
+
+    
 }

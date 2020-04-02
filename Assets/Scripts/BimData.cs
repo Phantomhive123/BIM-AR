@@ -45,15 +45,24 @@ public struct BimColor
 
 public struct BimProduct
 {
-    public int productLabel;
+    public int entityLabel;
     public short productType;
-    public Vector3 position;
-    public Vector3 scale;
+    public Vector3 position;    //好像可以删掉
+    public Vector3 scale;       //好像可以删掉
     public List<BimShape> shapes;
+
+    public BimProduct(int Label,short ID)
+    {
+        entityLabel = Label;
+        productType = ID;
+        position = Vector3.zero;
+        scale = Vector3.zero;
+        shapes = new List<BimShape>();
+    }
 
     public BimProduct(int Label, short ID, Vector3 Pos, Vector3 Scale)
     {
-        productLabel = Label;
+        entityLabel = Label;
         productType = ID;
         position = Pos;
         scale = Scale;
@@ -62,7 +71,7 @@ public struct BimProduct
 
     public BimProduct(int Label, short Type, float px, float py, float pz, float sx, float sy, float sz)
     {
-        productLabel = Label;
+        entityLabel = Label;
         productType = Type;
         position = new Vector3(px, py, pz);
         scale = new Vector3(sx, sy, sz);
@@ -104,11 +113,21 @@ public struct BimTriangulation
         else
             bimTriangulation = triangulation;
 
-        vertices = new List<Vector3>();
-        triangles = new List<int>();
+        vertices = new List<Vector3>();       
         normals = new List<Vector3>();
 
-        foreach(var v in bimTriangulation.Vertices)
+        bimTriangulation.ToPointsWithNormalsAndIndices(out List<float[]> points, out List<int> indices);
+        triangles = indices;
+        foreach (var p in points)
+        {
+            var vertice = new Vector3(p[0], p[1], p[2]) / scale - offset;
+            var normal = new Vector3(p[3], p[4], p[5]);
+            vertices.Add(vertice);
+            normals.Add(normal);
+        }
+
+        /*
+        foreach (var v in bimTriangulation.Vertices)
             vertices.Add(new Vector3((float)v.X, (float)v.Y, (float)v.Z) / scale - offset);
         foreach(var f in bimTriangulation.Faces)
         {
@@ -118,5 +137,6 @@ public struct BimTriangulation
                 normals.Add(new Vector3((float)n.Normal.X, (float)n.Normal.Y, (float)n.Normal.Z));
             }
         }
+        */
     }
 }
