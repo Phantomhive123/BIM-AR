@@ -9,7 +9,8 @@ using System.Collections.Generic;
 
 public class WexBimHelper
 {
-    private const string EXE_PATH= "D:\\Desktop\\wexBimHelper\\wexHelper.exe";
+    private const string EXE_PATH = "D:\\Project\\BIM-AR\\_wexBIMCreater\\wexHelper.exe";//台式
+    //private const string EXE_PATH= "D:\\Desktop\\wexBimHelper\\wexHelper.exe";//笔记本
 
     public static void CreateWexBim(string ifcPath)
     {
@@ -21,7 +22,7 @@ public class WexBimHelper
             myprocess.StartInfo.UseShellExecute = false;
             myprocess.Start();
             myprocess.WaitForExit();
-            UnityEngine.Debug.Log("Done:"+ifcPath);
+            //UnityEngine.Debug.Log("Done:"+ifcPath);
         }
         catch (Exception ex)
         {

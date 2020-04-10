@@ -12,7 +12,7 @@ public class IFCReader
         string ifcPath = EditorUtility.OpenFilePanelWithFilters("目标ifc文件", null, new string[] { "Industry Foundation Classes", "ifc" });
         if(string.IsNullOrEmpty(ifcPath)) return;
         WexBimHelper.CreateWexBim(ifcPath);
-        return;
+        
         string wexBimPath = ifcPath.Replace(".ifc", ".wexBIM");
         WexBimHelper.ReadWexBim(wexBimPath);
 
