@@ -401,3 +401,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   HorizontalScaler: 0.01
   VerticalScaler: 5
+  RotationScaler: 1
