@@ -17,6 +17,7 @@ public class ModelCreater
             //productObj.transform.localScale = product.scale;
             
             CreateShape(product, productObj, colors);
+            CombineMesh(productData);
         }
     }
 
@@ -42,6 +43,27 @@ public class ModelCreater
             meshRenderer.material = bimColor.material;
             //shapeObj.AddComponent<MeshCollider>();
         }
+    }
+
+    private static void CombineMesh(ProductData productData)
+    {
+        if (productData.BimProduct.shapes.Count == 0)
+            return;
+
+        MeshFilter[] meshFilters = productData.GetComponentsInChildren<MeshFilter>();
+        CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
+        for (int i = 0; i < meshFilters.Length; i++) 
+        {
+            combineInstances[i].mesh = meshFilters[i].sharedMesh;
+            combineInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
+        }
+        Mesh totalMesh = new Mesh();
+        totalMesh.CombineMeshes(combineInstances);
+        //productData.gameObject.AddComponent<MeshFilter>().sharedMesh = totalMesh;
+        //productData.gameObject.AddComponent<MeshRenderer>();
+        MeshCollider meshCollider = productData.gameObject.AddComponent<MeshCollider>();
+        meshCollider.sharedMesh = totalMesh;
+        //没有把子物体的mesh删除，主要原因是害怕子物体的material信息不一致，不知道之后有没有好办法
     }
 
     public static void GenerateSpatialStructure(ProjectData projectData)

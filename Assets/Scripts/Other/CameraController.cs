@@ -18,6 +18,9 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float RotationScaler = 1f;
 
+    [SerializeField]
+    private GameObject target;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +31,29 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButtonDown(2))
+        /*
+        if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                mousePosLastFrame = Input.mousePosition;
+            }
+            if (Input.GetMouseButton(0))
+            {
+                mousePosCurrentFrame = Input.mousePosition;
+
+                mousePosLastFrame = mousePosCurrentFrame;
+            }
+        }
+        */
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit);
+            Debug.Log(raycastHit.collider.gameObject.name);
+        }
+
+        if (Input.GetMouseButtonDown(2))
         {
             mousePosLastFrame = Input.mousePosition;
         }
@@ -54,8 +79,7 @@ public class CameraController : MonoBehaviour
         }
 
         float scrollWheelMovement = Input.GetAxis("Mouse ScrollWheel");
-        transform.position += transform.forward * scrollWheelMovement * VerticalScaler;
-        
+        transform.position += transform.forward * scrollWheelMovement * VerticalScaler;   
     }
 
     private void FixedUpdate()
@@ -66,5 +90,11 @@ public class CameraController : MonoBehaviour
     public void ResetCamera()
     {
         transform.SetPositionAndRotation(originalPos, originalRotation);
+    }
+
+    public void SetTarget(GameObject obj)
+    {
+        target = obj;
+        //物体高亮
     }
 }
