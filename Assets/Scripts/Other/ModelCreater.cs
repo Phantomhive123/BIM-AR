@@ -50,6 +50,13 @@ public class ModelCreater
         if (productData.BimProduct.shapes.Count == 0)
             return;
 
+        //获取MeshRenderer数组，从这个数组获取材质信息
+        MeshRenderer[] meshRenderers = productData.GetComponentsInChildren<MeshRenderer>();
+        Material[] mats = new Material[meshRenderers.Length];
+        for (int i = 0; i < meshRenderers.Length; i++)
+            mats[i] = meshRenderers[i].sharedMaterial;
+
+        //获取MeshFilter数组，从这个数组获取网格信息
         MeshFilter[] meshFilters = productData.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combineInstances = new CombineInstance[meshFilters.Length];
         for (int i = 0; i < meshFilters.Length; i++) 
@@ -57,13 +64,24 @@ public class ModelCreater
             combineInstances[i].mesh = meshFilters[i].sharedMesh;
             combineInstances[i].transform = meshFilters[i].transform.localToWorldMatrix;
         }
-        Mesh totalMesh = new Mesh();
-        totalMesh.CombineMeshes(combineInstances);
-        //productData.gameObject.AddComponent<MeshFilter>().sharedMesh = totalMesh;
-        //productData.gameObject.AddComponent<MeshRenderer>();
+
+        //创建合并后的MeshFilter
+        MeshFilter mf = productData.gameObject.AddComponent<MeshFilter>();
+        mf.mesh = new Mesh();
+        mf.mesh.CombineMeshes(combineInstances, false);
+
+        //创建MeshRenderer
+        MeshRenderer mr = productData.gameObject.AddComponent<MeshRenderer>();
+        mr.sharedMaterials = mats;
+
+        //创建MeshCollider
         MeshCollider meshCollider = productData.gameObject.AddComponent<MeshCollider>();
-        meshCollider.sharedMesh = totalMesh;
-        //没有把子物体的mesh删除，主要原因是害怕子物体的material信息不一致，不知道之后有没有好办法
+        meshCollider.sharedMesh = mf.mesh;
+
+        Transform trans = productData.transform;
+        int childCount = trans.childCount;
+        for (int i = childCount - 1; i >= 0; i--)
+            GameObject.Destroy(trans.GetChild(i).gameObject);
     }
 
     public static void GenerateSpatialStructure(ProjectData projectData)

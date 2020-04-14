@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
 
     private Material originalMaterial;
     [SerializeField]
-    private Material lightMaterial;
+    private Material lightMaterial = null;
 
     // Start is called before the first frame update
     void Start()
