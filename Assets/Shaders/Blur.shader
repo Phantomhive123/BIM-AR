@@ -57,7 +57,10 @@
 						tmpColor += color;
 					}
 				}
-				return tmpColor / count;
+
+                float4 result = tmpColor / count - tex2D(_MainTex, uv) - float4(0, 1, 1, 0);
+
+                return result;
 			}
 
             v2f vert (appdata v)

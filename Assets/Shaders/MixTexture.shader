@@ -60,6 +60,7 @@
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, final);
                 return final;
+                //return blur;
             }
             ENDCG
         }

@@ -21,6 +21,10 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private GameObject target;
 
+    private Material originalMaterial;
+    [SerializeField]
+    private Material lightMaterial;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,7 +54,18 @@ public class CameraController : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit);
-            Debug.Log(raycastHit.collider.gameObject.name);
+            if (raycastHit.collider != null) 
+            {
+                GameObject obj = raycastHit.collider.gameObject;
+                if (obj == target) return;
+                if (target != null) 
+                    target.GetComponent<MeshRenderer>().material = originalMaterial;
+                MeshRenderer mr = obj.GetComponent<MeshRenderer>();
+                originalMaterial = mr.material;
+                mr.material = lightMaterial;
+                lightMaterial.color = originalMaterial.color;
+                target = obj;
+            }
         }
 
         if (Input.GetMouseButtonDown(2))
