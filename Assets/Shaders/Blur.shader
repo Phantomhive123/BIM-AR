@@ -58,7 +58,7 @@
 					}
 				}
 
-                float4 result = tmpColor / count - tex2D(_MainTex, uv) - float4(0, 0.5, 1, 0);
+                float4 result = (tmpColor / count - tex2D(_MainTex, uv)) * 2 - float4(0, 0.5, 1, 0);
 
                 return result;
 			}

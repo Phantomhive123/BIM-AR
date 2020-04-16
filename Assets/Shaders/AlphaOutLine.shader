@@ -1,4 +1,4 @@
-﻿Shader "Custom/AlphaBase"
+﻿Shader "Custom/AlphaOutLine"
 {
 	Properties
 	{
@@ -8,12 +8,12 @@
 
 		SubShader
 		{
-			Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Transparent" }
+			Tags{ "Queue" = "Transparent" "IgnoreProjector" = "True" "RenderType" = "Glow" }
 
 			//这里加一个pass为了不会穿透叠自己的颜色，可以取消这个pass看看效果
 			Pass
 			{
-				ZWrite On
+				ZWrite off
 				ColorMask 0
 			}
 

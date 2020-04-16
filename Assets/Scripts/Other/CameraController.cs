@@ -20,10 +20,7 @@ public class CameraController : MonoBehaviour
 
     [SerializeField]
     private GameObject target;
-
-    private Material originalMaterial;
-    [SerializeField]
-    private Material lightMaterial = null;
+    private Material[] originalMaterials;
 
     // Start is called before the first frame update
     void Start()
@@ -54,18 +51,7 @@ public class CameraController : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit);
-            if (raycastHit.collider != null) 
-            {
-                GameObject obj = raycastHit.collider.gameObject;
-                if (obj == target) return;
-                if (target != null) 
-                    target.GetComponent<MeshRenderer>().material = originalMaterial;
-                MeshRenderer mr = obj.GetComponent<MeshRenderer>();
-                originalMaterial = mr.material;
-                mr.material = lightMaterial;
-                lightMaterial.color = originalMaterial.color;
-                target = obj;
-            }
+            SetOutLine(raycastHit);
         }
 
         if (Input.GetMouseButtonDown(2))
@@ -107,9 +93,27 @@ public class CameraController : MonoBehaviour
         transform.SetPositionAndRotation(originalPos, originalRotation);
     }
 
-    public void SetTarget(GameObject obj)
+    public void SetOutLine(RaycastHit raycastHit)
     {
-        target = obj;
-        //物体高亮
+        if (raycastHit.collider != null)
+        {
+            GameObject obj = raycastHit.collider.gameObject;
+            if (obj == target) return;
+            //还原之前的materials
+            if (target != null)
+                target.GetComponent<MeshRenderer>().materials = originalMaterials;
+            //存储当前的materials
+            MeshRenderer mr = obj.GetComponent<MeshRenderer>();
+            originalMaterials = mr.materials;
+            //开始新建新的materials
+            Material[] newMaterials = new Material[mr.materials.Length];
+            for (int i = 0; i < mr.materials.Length; i++)
+            {
+                newMaterials[i] = new Material(Shader.Find("Custom/AlphaOutLine"));
+                newMaterials[i].color = mr.materials[i].color;
+            }
+            mr.materials = newMaterials;
+            target = obj;
+        }
     }
 }
