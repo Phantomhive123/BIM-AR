@@ -6,6 +6,7 @@
 		_BlurRadius ("_BlurRadius", Range(1,10)) = 5
 		_TextureSizeX ("_TextureSizeX",Float) = 256
 		_TextureSizeY ("_TextureSizeY",Float) = 256
+        _BlurStrength ("_BlurStrength", Range(1,10)) = 3
     }
     SubShader
     {
@@ -40,6 +41,7 @@
 			int _BlurRadius;
 			float _TextureSizeX;
 			float _TextureSizeY;
+            int _BlurStrength;
 
 			fixed4 BlurTexture(float2 uv, float blurRadius, float textureSizeX, float textureSizeY)
 			{
@@ -58,7 +60,7 @@
 					}
 				}
 
-                float4 result = (tmpColor / count - tex2D(_MainTex, uv)) * 2 - float4(0, 0.5, 1, 0);
+                float4 result = _BlurStrength * (tmpColor / count - tex2D(_MainTex, uv)) - float4(0, 0.5, 1, 0);
 
                 return result;
 			}

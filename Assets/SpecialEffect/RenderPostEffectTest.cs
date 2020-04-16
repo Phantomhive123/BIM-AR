@@ -6,7 +6,7 @@ public class RenderPostEffectTest : MonoBehaviour
 {
     public Material renderMaterial;
     public Shader replaceShader;
-
+    /*
     private void LateUpdate()
     {
         if(GetComponent<Camera>() != null && replaceShader != null)
@@ -14,7 +14,7 @@ public class RenderPostEffectTest : MonoBehaviour
             GetComponent<Camera>().RenderWithShader(replaceShader, "RenderType");
         }
     }
-
+    */
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
         if (renderMaterial != null)

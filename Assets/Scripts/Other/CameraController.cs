@@ -21,6 +21,7 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private GameObject target;
     private Material[] originalMaterials;
+    private int originalLayer;
 
     // Start is called before the first frame update
     void Start()
@@ -95,6 +96,7 @@ public class CameraController : MonoBehaviour
 
     public void SetOutLine(RaycastHit raycastHit)
     {
+        /*
         if (raycastHit.collider != null)
         {
             GameObject obj = raycastHit.collider.gameObject;
@@ -115,5 +117,17 @@ public class CameraController : MonoBehaviour
             mr.materials = newMaterials;
             target = obj;
         }
+        */
+        if (raycastHit.collider != null)
+        {
+            GameObject obj = raycastHit.collider.gameObject;
+            if (obj == target) return;
+            if (target != null)
+                target.layer = originalLayer;
+            originalLayer = obj.layer;
+            obj.layer = LayerMask.NameToLayer("OutLine");
+            target = obj;
+        }
+        
     }
 }

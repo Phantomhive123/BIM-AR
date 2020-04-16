@@ -23,7 +23,7 @@ public class CustomGlow : MonoBehaviour
         obj.transform.SetParent(transform, false);
 
         var cam = obj.AddComponent<Camera>();
-        cam.enabled = false;
+        cam.enabled = true;
         cam.clearFlags = CameraClearFlags.SolidColor;
         cam.backgroundColor = Color.black;
         cam.orthographic = mainCam.orthographic;
@@ -32,6 +32,7 @@ public class CustomGlow : MonoBehaviour
         cam.farClipPlane = mainCam.farClipPlane;
         cam.fieldOfView = mainCam.fieldOfView;
         cam.targetTexture = m_rt;
+        cam.cullingMask = LayerMask.GetMask("OutLine");
 
         var bloomTex = obj.AddComponent<RenderPostEffectTest>();
         bloomTex.replaceShader = m_renderGlowShader;
