@@ -2,8 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum CameraMode
+{
+    Move,
+    MeasureDis,
+    MeasureArea
+}
+
 public class CameraController : MonoBehaviour
 {
+    private CameraMode cameraMode = CameraMode.Move;
+
     //平移旋转进退
     private Vector3 originalPos = Vector3.zero;
     private Quaternion originalRotation = Quaternion.identity;
@@ -129,5 +138,10 @@ public class CameraController : MonoBehaviour
             target = obj;
         }
         
+    }
+
+    public void SetCameraMode()
+    {
+
     }
 }

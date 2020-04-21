@@ -15,9 +15,16 @@ public class MathTool
         if (raycastHit.collider != null)
         {
             GameObject obj = raycastHit.collider.gameObject;
+            Vector3 normal = raycastHit.normal;
+            Debug.Log(normal);
             MeshFilter meshFilter = obj.GetComponent<MeshFilter>();
             Mesh m = meshFilter.mesh;
         }
+        return 0;
+    }
+
+    public static float GetArea(List<Vector3> points)
+    {
         return 0;
     }
 }
