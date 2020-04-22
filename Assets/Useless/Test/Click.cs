@@ -20,7 +20,7 @@ public class Click : MonoBehaviour
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out var raycastHit);
             if (raycastHit.collider != null)
             {
-                Debug.Log(raycastHit.normal);
+                Debug.Log(raycastHit.normal);//注意这个是点击到点的世界坐标下的法线
                 Debug.Log(raycastHit.triangleIndex);//注意这个获得的是meshcollider的序列
 
                 if (raycastHit.collider.GetComponent<MeshCollider>() == null) return;
@@ -92,6 +92,13 @@ public class Click : MonoBehaviour
                 newMesh.triangles = finalTriangles.ToArray();
                 raycastHit.collider.GetComponent<MeshFilter>().sharedMesh = newMesh;
 
+                GameObject obj = new GameObject();
+                MeshFilter mf = obj.AddComponent<MeshFilter>();
+                MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+
+                mr.material = new Material(Shader.Find("Standard"));
+                mf.mesh = newMesh;
+                obj.layer = LayerMask.NameToLayer("OutLine");
             }
         }
     }

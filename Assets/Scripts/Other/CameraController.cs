@@ -11,7 +11,7 @@ public enum CameraMode
 
 public class CameraController : MonoBehaviour
 {
-    private CameraMode cameraMode = CameraMode.Move;
+    public CameraMode cameraMode = CameraMode.Move;
 
     //平移旋转进退
     private Vector3 originalPos = Vector3.zero;
@@ -29,7 +29,6 @@ public class CameraController : MonoBehaviour
 
     [SerializeField]
     private GameObject target;
-    private Material[] originalMaterials;
     private int originalLayer;
 
     // Start is called before the first frame update
@@ -41,7 +40,7 @@ public class CameraController : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
+    {    
         /*
         if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt))
         {
@@ -101,6 +100,7 @@ public class CameraController : MonoBehaviour
     public void ResetCamera()
     {
         transform.SetPositionAndRotation(originalPos, originalRotation);
+        //记得重置target
     }
 
     public void SetOutLine(RaycastHit raycastHit)
@@ -140,8 +140,9 @@ public class CameraController : MonoBehaviour
         
     }
 
-    public void SetCameraMode()
+    public void SetCameraMode(CameraMode mode)
     {
-
+        cameraMode = mode;
     }
+
 }
