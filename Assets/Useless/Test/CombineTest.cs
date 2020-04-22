@@ -31,6 +31,6 @@ public class CombineTest : MonoBehaviour
             Destroy(transform.GetChild(i).gameObject);
         }
 
-        
+        gameObject.AddComponent<MeshCollider>().sharedMesh = mf.mesh;
     }
 }
