@@ -4,14 +4,19 @@ using UnityEngine;
 
 public enum CameraMode
 {
-    Move,
-    MeasureDis,
-    MeasureArea
+    AimClick,
+    DistanceMeasure,
+    AreaMeasure
 }
 
 public class CameraController : MonoBehaviour
 {
-    public CameraMode cameraMode = CameraMode.Move;
+    [SerializeField]
+    private CameraMode currentCameraMode;
+    private IMouseClickType currentClickType;
+    private AimClick aimClick;
+    private DistanceMeasure distanceMeasure;
+    private AreaMeasure areaMeasure;
 
     //平移旋转进退
     private Vector3 originalPos = Vector3.zero;
@@ -27,15 +32,16 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float RotationScaler = 1f;
 
-    [SerializeField]
-    private GameObject target;
-    private int originalLayer;
-
     // Start is called before the first frame update
     void Start()
     {
         originalPos = transform.position;
         originalRotation = transform.rotation;
+        aimClick = new AimClick();
+        distanceMeasure = new DistanceMeasure();
+        areaMeasure = new AreaMeasure();
+
+        SetCameraMode(CameraMode.AimClick);
     }
 
     // Update is called once per frame
@@ -57,10 +63,11 @@ public class CameraController : MonoBehaviour
         }
         */
 
+        //并不是所有的情况都要发射射线，比如看看点没点到UI
         if(Input.GetMouseButtonDown(0))
         {
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit);
-            SetOutLine(raycastHit);
+            currentClickType.Click(raycastHit);
         }
 
         if (Input.GetMouseButtonDown(2))
@@ -92,57 +99,43 @@ public class CameraController : MonoBehaviour
         transform.position += transform.forward * scrollWheelMovement * VerticalScaler;   
     }
 
-    private void FixedUpdate()
-    {
-        
-    }
-
     public void ResetCamera()
     {
         transform.SetPositionAndRotation(originalPos, originalRotation);
-        //记得重置target
-    }
-
-    public void SetOutLine(RaycastHit raycastHit)
-    {
-        /*
-        if (raycastHit.collider != null)
-        {
-            GameObject obj = raycastHit.collider.gameObject;
-            if (obj == target) return;
-            //还原之前的materials
-            if (target != null)
-                target.GetComponent<MeshRenderer>().materials = originalMaterials;
-            //存储当前的materials
-            MeshRenderer mr = obj.GetComponent<MeshRenderer>();
-            originalMaterials = mr.materials;
-            //开始新建新的materials
-            Material[] newMaterials = new Material[mr.materials.Length];
-            for (int i = 0; i < mr.materials.Length; i++)
-            {
-                newMaterials[i] = new Material(Shader.Find("Custom/AlphaOutLine"));
-                newMaterials[i].color = mr.materials[i].color;
-            }
-            mr.materials = newMaterials;
-            target = obj;
-        }
-        */
-        if (raycastHit.collider != null)
-        {
-            GameObject obj = raycastHit.collider.gameObject;
-            if (obj == target) return;
-            if (target != null)
-                target.layer = originalLayer;
-            originalLayer = obj.layer;
-            obj.layer = LayerMask.NameToLayer("OutLine");
-            target = obj;
-        }
-        
+        currentClickType.Reset();
     }
 
     public void SetCameraMode(CameraMode mode)
     {
-        cameraMode = mode;
+        if (currentClickType != null) 
+            currentClickType.Reset();
+        currentCameraMode = mode;
+        switch(mode)
+        {
+            case CameraMode.AimClick:currentClickType = aimClick;break;
+            case CameraMode.DistanceMeasure:currentClickType = distanceMeasure;break;
+            case CameraMode.AreaMeasure:currentClickType = areaMeasure;break;
+        }
     }
 
+    public void SetCameraMode(int index)
+    {
+        if (currentClickType != null)
+            currentClickType.Reset();
+        switch (index)
+        {
+            case 0:
+                currentCameraMode = CameraMode.AimClick;
+                currentClickType = aimClick;
+                break;
+            case 1:
+                currentCameraMode = CameraMode.DistanceMeasure;
+                currentClickType = distanceMeasure;
+                break;
+            case 2:
+                currentCameraMode = CameraMode.AreaMeasure;
+                currentClickType = areaMeasure;
+                break;
+        }
+    }
 }
