@@ -16,32 +16,48 @@ public class ModelCreater
             //productObj.transform.position = product.position;
             //productObj.transform.localScale = product.scale;
             
-            CreateShape(product, productObj, colors);
+            CreateShapes(product, productObj, colors);
         }
     }
 
-    private static void CreateShape(BimProduct product, GameObject productObj, List<BimColor> colors)
+    private static void CreateShapes(BimProduct product, GameObject productObj, List<BimColor> colors)
     {
-        foreach (var shape in product.shapes)
-        {
-            GameObject shapeObj = new GameObject(shape.instanceLabel.ToString());
-            shapeObj.transform.parent = productObj.transform;
+        List<Mesh> meshes = new List<Mesh>();
+        List<Material> materials = new List<Material>();
 
-            var meshFilter = shapeObj.AddComponent<MeshFilter>();
-            var mesh = meshFilter.mesh;
-            foreach(var tri in shape.triangulations)//?
+        foreach(var shape in product.shapes)
+        {
+            Mesh mesh = new Mesh();
+            foreach(var tri in shape.triangulations)
             {
                 mesh.vertices = tri.vertices.ToArray();
                 mesh.triangles = tri.triangles.ToArray();
                 mesh.normals = tri.normals.ToArray();
                 mesh.Optimize();
             }
+            meshes.Add(mesh);
 
-            var meshRenderer = shapeObj.AddComponent<MeshRenderer>();
-            BimColor bimColor = colors.Find(color => color.styleLabel == shape.styleLabel);   
-            meshRenderer.material = bimColor.material;
-            //shapeObj.AddComponent<MeshCollider>();
+            BimColor bimColor = colors.Find(color => color.styleLabel == shape.styleLabel);
+            materials.Add(bimColor.material);
         }
+
+        CombineInstance[] combineInstances = new CombineInstance[meshes.Count];
+        for (int i = 0; i < meshes.Count; i++) 
+        {
+            combineInstances[i].mesh = meshes[i];
+            combineInstances[i].transform = productObj.transform.localToWorldMatrix;
+        }
+        
+        //创建MeshFilter
+        MeshFilter mf = productObj.AddComponent<MeshFilter>();
+        mf.mesh = new Mesh();
+        mf.mesh.CombineMeshes(combineInstances, false);
+        //创建MeshRenderer
+        MeshRenderer mr = productObj.AddComponent<MeshRenderer>();
+        mr.sharedMaterials = materials.ToArray();
+        //创建MeshCollider
+        MeshCollider mc = productObj.AddComponent<MeshCollider>();
+        mc.sharedMesh = mf.mesh;        
     }
 
     public static void GenerateSpatialStructure(ProjectData projectData)

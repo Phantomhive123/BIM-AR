@@ -98,9 +98,9 @@ public struct BimTriangulation
         vertices = new List<Vector3>();       
         normals = new List<Vector3>();
 
-        bimTriangulation.ToPointsWithNormalsAndIndices(out List<float[]> points, out List<int> indices);
+        bimTriangulation.ToPointsWithNormalsAndIndices(out List<float[]> positions, out List<int> indices);
         triangles = indices;
-        foreach (var p in points)
+        foreach (var p in positions)
         {
             //原版减去了一个offset，但是我发现不计算offset所有偏移都是正确的
             //var vertice = new Vector3(p[0], p[1], p[2]) / scale - offset;
