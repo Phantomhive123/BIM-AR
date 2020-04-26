@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum CameraMode
 {
@@ -31,6 +32,11 @@ public class CameraController : MonoBehaviour
     private float VerticalScaler = 1f;//感觉这个系数需要动态变化
     [SerializeField]
     private float RotationScaler = 1f;
+
+    [SerializeField]
+    private Text nameLabel;
+    [SerializeField]
+    private Text infoLabel;
 
     // Start is called before the first frame update
     void Start()
@@ -63,11 +69,11 @@ public class CameraController : MonoBehaviour
         }
         */
 
-        //并不是所有的情况都要发射射线，比如看看点没点到UI
-        if(Input.GetMouseButtonDown(0))
+        //如果点击鼠标左键并且没有点击在UI上
+        if(Input.GetMouseButtonDown(0) && !UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject())
         {
             Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit);
-            currentClickType.Click(raycastHit);
+            ShowClickResult(currentClickType.Click(raycastHit));
         }
 
         if (Input.GetMouseButtonDown(2))
@@ -137,5 +143,12 @@ public class CameraController : MonoBehaviour
                 currentClickType = areaMeasure;
                 break;
         }
+    }
+
+    private void ShowClickResult(ClickResult clickResult)
+    {
+        if (clickResult == null) return;
+        nameLabel.text = clickResult.ObjName;
+        infoLabel.text = clickResult.ObjInfo;
     }
 }

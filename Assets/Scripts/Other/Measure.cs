@@ -1,14 +1,30 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Xbim.Ifc2x3.Interfaces;
+using Xbim.Ifc2x3.SharedBldgElements;
 
 //鼠标操作类型
 public interface IMouseClickType
 {
-    void Click(RaycastHit raycastHit);
+    ClickResult Click(RaycastHit raycastHit);
 
     void Reset();
+}
+
+//用于返回点击信息
+public class ClickResult
+{
+    public string ObjName;
+    public string ObjInfo;
+
+    public ClickResult()
+    {
+        ObjName = "对象无效";
+        ObjInfo = "对象无效";
+    }
 }
 
 public class AimClick:IMouseClickType
@@ -24,17 +40,24 @@ public class AimClick:IMouseClickType
         outLineLayer = LayerMask.NameToLayer("OutLine");
     }
 
-    public void Click(RaycastHit raycastHit)
+    public ClickResult Click(RaycastHit raycastHit)
     {
         Debug.Log("AimClick!");
-        if (raycastHit.collider == null) return;
+        if (raycastHit.collider == null) return null;
         GameObject obj = raycastHit.collider.gameObject;
-        if (obj == target) return;
+        ProductData pd = obj.GetComponent<ProductData>();
+        if (pd == null) return null;
+        if (obj == target) return null;
         if (target != null)
             target.layer = originalLayer;
         originalLayer = obj.layer;
         obj.layer = outLineLayer;
         target = obj;
+
+        ClickResult result = new ClickResult();
+        result.ObjName = pd.ProductName;
+        result.ObjInfo = pd.IFCProduct.GetType().Name;
+        return result;
     }
 
     public void Reset()
@@ -60,44 +83,53 @@ public class DistanceMeasure:IMouseClickType
         Reset();
     }
 
-    public void Click(RaycastHit raycastHit)
+    public ClickResult Click(RaycastHit raycastHit)
     {
         Debug.Log("DistanceClick!");
-        if (raycastHit.collider == null) return;
+        if (raycastHit.collider == null) return null;
         Vector3 point = raycastHit.point;
 
-        if (numCount == 0)
+        if (numCount == 0 || numCount >= 2)
         {
             pointA = point;
+            lineRenderer.positionCount = 1;
             lineRenderer.SetPosition(0, pointA);
-            numCount++;
+            numCount = 1;
+
+            ClickResult result = new ClickResult();
+            result.ObjName = "起点";
+            result.ObjInfo = point.ToString();
+            return result;
         }
         else if (numCount == 1)
         {
             pointB = point;
+            lineRenderer.positionCount = 2;
             lineRenderer.SetPosition(1, pointB);
-            numCount++;
+            numCount = 2;
             float ans = MathTool.GetDisBetweenPoints(pointA, pointB);
-            Debug.Log("Distance is :" + ans);
+
+            ClickResult result = new ClickResult();
+            result.ObjName = "两点距离";
+            result.ObjInfo = ans.ToString("f3") + "m";
+            return result;
         }
-        else
-            Debug.LogWarning("本次测量已经有首尾点");
+        return null;
     }
 
     public void Reset()
     {
-
         pointA = pointB = Vector3.zero;
         numCount = 0;
-        lineRenderer.positionCount = 2;
-        lineRenderer.SetPosition(0, Vector3.zero);
-        lineRenderer.SetPosition(1, Vector3.zero);
+        lineRenderer.positionCount = 0;
+        lineRenderer.startWidth = 0.02f;
     }
 }
 
 public class AreaMeasure:IMouseClickType
 {
     private GameObject focusedPlane;
+    private List<Type> whiteList;
 
     public AreaMeasure()
     {
@@ -105,14 +137,23 @@ public class AreaMeasure:IMouseClickType
         focusedPlane.AddComponent<MeshFilter>();
         focusedPlane.AddComponent<MeshRenderer>();
         focusedPlane.layer = LayerMask.NameToLayer("OutLine");
+
+        whiteList = new List<Type>();
+        whiteList.Add(typeof(IfcWallStandardCase));
+        whiteList.Add(typeof(IfcSlab));
+        whiteList.Add(typeof(IfcWall));
     }
 
-    public void Click(RaycastHit raycastHit)
+    public ClickResult Click(RaycastHit raycastHit)
     {
         Debug.Log("AreaClick!");
-        if (raycastHit.collider == null) return;
-        if (raycastHit.collider.GetComponent<MeshCollider>() == null) return;
-        if (raycastHit.collider.GetComponent<MeshFilter>() == null) return;
+        if (raycastHit.collider == null) return null;
+        if (raycastHit.collider.GetComponent<MeshCollider>() == null) return null;
+        if (raycastHit.collider.GetComponent<MeshFilter>() == null) return null;
+
+        ProductData pd = raycastHit.collider.GetComponent<ProductData>();
+        if (pd == null||!whiteList.Contains(pd.IFCProduct.GetType())) return null;
+
         Mesh mesh = raycastHit.collider.GetComponent<MeshFilter>().sharedMesh;
         Vector3[] vertices = mesh.vertices;
         Vector3[] normals = mesh.normals;
@@ -189,6 +230,8 @@ public class AreaMeasure:IMouseClickType
         newMesh.normals = normals;
         newMesh.triangles = finalTriangles.ToArray();
 
+        //这一步要判断三角形面片数是否等于三
+
         focusedPlane.transform.position = raycastHit.collider.transform.position;
         focusedPlane.transform.rotation = raycastHit.collider.transform.rotation;
         focusedPlane.transform.localScale = raycastHit.collider.transform.localScale;
@@ -196,6 +239,14 @@ public class AreaMeasure:IMouseClickType
         focusedPlane.GetComponent<MeshFilter>().mesh = newMesh;
         focusedPlane.GetComponent<MeshRenderer>().material = raycastHit.collider.GetComponent<MeshRenderer>().material;
         focusedPlane.SetActive(true);
+
+        Debug.Log("Area is:" + MathTool.GetTrianglesArea(vertices, finalTriangles.ToArray()));
+
+        ClickResult result = new ClickResult();
+        result.ObjName = pd.ProductName;
+        string area = MathTool.GetTrianglesArea(vertices, finalTriangles.ToArray()).ToString("f3");
+        result.ObjInfo = "面积为：" + area + "平方米";
+        return result;
     }
 
 

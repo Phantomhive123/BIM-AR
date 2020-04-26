@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc2x3.Interfaces;
 
 public class ProductData : MonoBehaviour
 {
@@ -64,7 +64,7 @@ public class ProductData : MonoBehaviour
         HaveSpatialStructure = true;
     }
 
-    public void SetDecomposedProducts(IEnumerable<IIfcRelAggregates> connects)
+    public void SetDecomposedProducts(IEnumerable<IIfcRelDecomposes> connects)
     {
         List<ProductData> pds = new List<ProductData>();
         foreach(var c in connects)

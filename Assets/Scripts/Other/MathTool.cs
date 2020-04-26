@@ -4,27 +4,41 @@ using UnityEngine;
 
 public class MathTool
 {
-
     public static float GetDisBetweenPoints(Vector3 point_a, Vector3 point_b)
     {
         return Vector3.Distance(point_a, point_b);
     }
 
-    public static float GetArea(RaycastHit raycastHit)
+    public static float GetTriangleArea(Vector3 pt0, Vector3 pt1, Vector3 pt2)
     {
-        if (raycastHit.collider != null)
-        {
-            GameObject obj = raycastHit.collider.gameObject;
-            Vector3 normal = raycastHit.normal;
-            Debug.Log(normal);
-            MeshFilter meshFilter = obj.GetComponent<MeshFilter>();
-            Mesh m = meshFilter.mesh;
-        }
-        return 0;
+        //要不要计算scale是一个问题
+        float a = (pt1 - pt0).magnitude;
+        float b = (pt2 - pt1).magnitude;
+        float c = (pt0 - pt2).magnitude;
+        float p = (a + b + c) * 0.5f;
+        return Mathf.Sqrt(p * (p - a) * (p - b) * (p - c));
     }
 
-    public static float GetArea(List<Vector3> points)
+    public static float GetTrianglesArea(Vector3[] triangles)
     {
-        return 0;
+        if (triangles.Length % 3 != 0)
+            Debug.Log("Triangles array must be times in 3!");
+
+        float result = 0;
+        for (int i = 0; i < triangles.Length;)
+        {
+            result += GetTriangleArea(triangles[i++], triangles[i++], triangles[i++]);
+        }
+        return result;
+    }
+
+    public static float GetTrianglesArea(Vector3[] vertices, int[] triangles)
+    {
+        Vector3[] tri = new Vector3[triangles.Length];
+        for (int i = 0; i < triangles.Length; i++)
+        {
+            tri[i] = vertices[triangles[i]];
+        }
+        return GetTrianglesArea(tri);
     }
 }

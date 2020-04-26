@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc2x3.Interfaces;
 
 public class ProjectData : MonoBehaviour
 {

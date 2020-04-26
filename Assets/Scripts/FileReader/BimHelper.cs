@@ -4,7 +4,7 @@ using UnityEngine;
 using Xbim.Ifc;
 using Xbim.Common.Geometry;
 using Xbim.Common.XbimExtensions;
-using Xbim.Ifc4.Interfaces;
+using Xbim.Ifc2x3.Interfaces;
 using System.Linq;
 
 public class BimHelper
