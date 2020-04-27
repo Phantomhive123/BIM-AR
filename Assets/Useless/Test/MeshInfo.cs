@@ -11,4 +11,7 @@ public class MeshInfo : MonoBehaviour
     public Vector3 aimNormal;
     public int[] parallelPoints;
     public int[] parallelTriangles;
+
+    public int[] finalVerticesIndex;
+    public int[] finalTriangles;
 }

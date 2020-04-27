@@ -75,11 +75,17 @@ public class DistanceMeasure:IMouseClickType
 
     private int numCount;
     private LineRenderer lineRenderer;
+    private GameObject startPoint;
+    private GameObject endPoint;
 
     public DistanceMeasure()
     {
         GameObject obj = new GameObject("DistanceLine");
         lineRenderer = obj.AddComponent<LineRenderer>();
+        lineRenderer.material = Resources.Load<Material>("DistanceLine");
+        GameObject pref = Resources.Load<GameObject>("Point");
+        startPoint = GameObject.Instantiate(pref);
+        endPoint = GameObject.Instantiate(pref);
         Reset();
     }
 
@@ -96,6 +102,10 @@ public class DistanceMeasure:IMouseClickType
             lineRenderer.SetPosition(0, pointA);
             numCount = 1;
 
+            startPoint.SetActive(true);
+            endPoint.SetActive(false);
+            startPoint.transform.position = point;
+
             ClickResult result = new ClickResult();
             result.ObjName = "起点";
             result.ObjInfo = point.ToString();
@@ -108,6 +118,9 @@ public class DistanceMeasure:IMouseClickType
             lineRenderer.SetPosition(1, pointB);
             numCount = 2;
             float ans = MathTool.GetDisBetweenPoints(pointA, pointB);
+
+            endPoint.SetActive(true);
+            endPoint.transform.position = point;
 
             ClickResult result = new ClickResult();
             result.ObjName = "两点距离";
@@ -123,6 +136,8 @@ public class DistanceMeasure:IMouseClickType
         numCount = 0;
         lineRenderer.positionCount = 0;
         lineRenderer.startWidth = 0.02f;
+        startPoint.SetActive(false);
+        endPoint.SetActive(false);
     }
 }
 
@@ -183,16 +198,6 @@ public class AreaMeasure:IMouseClickType
                 parallelTriangles.Add(i);
         }
 
-        /*
-        MeshInfo meshinfo = focusedPlane.AddComponent<MeshInfo>();
-        meshinfo.normals = normals;
-        meshinfo.vertices = vertices;
-        meshinfo.triangles = triangles;
-        meshinfo.aimNormal = aimNormal;
-        meshinfo.parallelPoints = parallelPoints.ToArray();
-        meshinfo.parallelTriangles = parallelTriangles.ToArray();
-        */
-    
         //开始获取共面的顶点
         int finalVerticesCount = -1;
         int[] index = new int[3];
@@ -215,13 +220,24 @@ public class AreaMeasure:IMouseClickType
                     if (!finalVerticeIndex.Contains(index[2])) finalVerticeIndex.Add(index[2]);
                 }
             }
-        } while (finalVerticesCount == finalVerticeIndex.Count);//本次循环没有新增点，说明循环结束
+        } while (finalVerticesCount != finalVerticeIndex.Count);//本次循环没有新增点，说明循环结束
 
         //遍历平行的三角面，获得所有共面的三角面
         List<int> finalTriangles = new List<int>();
         foreach (int i in parallelTriangles)
             if (finalVerticeIndex.Contains(i))
                 finalTriangles.Add(i);
+        /*
+        MeshInfo meshinfo = Camera.main.gameObject.GetComponent<MeshInfo>();
+        meshinfo.normals = normals;
+        meshinfo.vertices = vertices;
+        meshinfo.triangles = triangles;
+        meshinfo.aimNormal = aimNormal;
+        meshinfo.parallelPoints = parallelPoints.ToArray();
+        meshinfo.parallelTriangles = parallelTriangles.ToArray();
+        meshinfo.finalTriangles = finalTriangles.ToArray();
+        meshinfo.finalVerticesIndex = finalVerticeIndex.ToArray();
+        */
 
         //到这里为止还可以优化，将vertices和normal里面没有用到的都删掉
 
@@ -230,8 +246,6 @@ public class AreaMeasure:IMouseClickType
         newMesh.normals = normals;
         newMesh.triangles = finalTriangles.ToArray();
 
-        //这一步要判断三角形面片数是否等于三
-
         focusedPlane.transform.position = raycastHit.collider.transform.position;
         focusedPlane.transform.rotation = raycastHit.collider.transform.rotation;
         focusedPlane.transform.localScale = raycastHit.collider.transform.localScale;
@@ -239,8 +253,6 @@ public class AreaMeasure:IMouseClickType
         focusedPlane.GetComponent<MeshFilter>().mesh = newMesh;
         focusedPlane.GetComponent<MeshRenderer>().material = raycastHit.collider.GetComponent<MeshRenderer>().material;
         focusedPlane.SetActive(true);
-
-        Debug.Log("Area is:" + MathTool.GetTrianglesArea(vertices, finalTriangles.ToArray()));
 
         ClickResult result = new ClickResult();
         result.ObjName = pd.ProductName;
