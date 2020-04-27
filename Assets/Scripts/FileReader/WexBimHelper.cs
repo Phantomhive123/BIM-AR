@@ -9,20 +9,23 @@ using System.Collections.Generic;
 
 public class WexBimHelper
 {
-    private const string EXE_PATH = "D:\\Project\\BIM-AR\\_wexBIMCreater\\wexHelper.exe";//台式
-    //private const string EXE_PATH= "D:\\Desktop\\wexBimHelper\\wexHelper.exe";//笔记本
-
     public static void CreateWexBim(string ifcPath)
     {
         try
         {
             Process myprocess = new Process();
+            string EXE_PATH;
+#if UNITY_EDITOR
+            EXE_PATH = UnityEngine.Application.dataPath + "/Plugins/wexHelper.exe";//台式
+#endif
+#if UNITY_STANDALONE_WIN
+            EXE_PATH = UnityEngine.Application.dataPath + "/Managed/wexHelper.exe";
+#endif
             ProcessStartInfo startInfo = new ProcessStartInfo(EXE_PATH, ifcPath);
             myprocess.StartInfo = startInfo;
             myprocess.StartInfo.UseShellExecute = false;
             myprocess.Start();
             myprocess.WaitForExit();
-            //UnityEngine.Debug.Log("Done:"+ifcPath);
         }
         catch (Exception ex)
         {
@@ -32,7 +35,6 @@ public class WexBimHelper
     
     public static void ReadWexBim(string wexBimPath)
     {
-        //Dictionary<int, BimColor> colors = new Dictionary<int, BimColor>();
         List<BimColor> colors = new List<BimColor>();
         List<BimRegion> regions = new List<BimRegion>();
         List<BimProduct> products = new List<BimProduct>();
@@ -87,12 +89,6 @@ public class WexBimHelper
                     var productType = br.ReadInt16();
                     var boxBytes = br.ReadBytes(6 * sizeof(float));
                     BimProduct product = new BimProduct(productLabel, productType);
-                    /*
-                    XbimRect3D bb = XbimRect3D.FromArray(boxBytes);
-                    XbimPoint3D doubleCenter = XbimPoint3D.Add(bb.Min, bb.Max);
-                    BimProduct product = new BimProduct(productLabel, productType, (float)doubleCenter.X / 2, (float)doubleCenter.Y / 2,
-                        (float)doubleCenter.Z / 2, (float)bb.SizeX, (float)bb.SizeY, (float)bb.SizeZ);
-                    */
                    products.Add(product);               
                 }
 
