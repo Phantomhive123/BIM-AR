@@ -11,7 +11,6 @@ public class MathTool
 
     public static float GetTriangleArea(Vector3 pt0, Vector3 pt1, Vector3 pt2)
     {
-        //要不要计算scale是一个问题
         float a = (pt1 - pt0).magnitude;
         float b = (pt2 - pt1).magnitude;
         float c = (pt0 - pt2).magnitude;

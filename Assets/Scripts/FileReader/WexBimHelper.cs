@@ -89,7 +89,7 @@ public class WexBimHelper
                     var productType = br.ReadInt16();
                     var boxBytes = br.ReadBytes(6 * sizeof(float));
                     BimProduct product = new BimProduct(productLabel, productType);
-                   products.Add(product);               
+                    products.Add(product);               
                 }
 
                 for (int i = 0; i < shapeCount; i++)

@@ -135,7 +135,7 @@ public class DistanceMeasure:IMouseClickType
         pointA = pointB = Vector3.zero;
         numCount = 0;
         lineRenderer.positionCount = 0;
-        lineRenderer.startWidth = 0.02f;
+        lineRenderer.startWidth = 0.1f;
         startPoint.SetActive(false);
         endPoint.SetActive(false);
     }
