@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
+/// <summary>
+/// 存储Project信息
+/// </summary>
 public class ProjectData : MonoBehaviour
 {
     [SerializeField]
-    private IIfcProject ifcProject;//判断是否需要
+    private IIfcProject ifcProject;
     [SerializeField]
     private string projectName;
     [SerializeField]
-    private List<ProductData> productsData = new List<ProductData>();//判断是否需要
+    private List<ProductData> productsData = new List<ProductData>();
     [SerializeField]
-    private List<SpatialData> subSpatial = new List<SpatialData>();//判断是否需要
-
+    private List<SpatialData> subSpatial = new List<SpatialData>();
 
     public IIfcProject IFCProject
     {

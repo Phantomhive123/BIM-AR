@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
+/// <summary>
+/// 层级结构
+/// </summary>
 public class SpatialData : MonoBehaviour
 {
     [SerializeField]

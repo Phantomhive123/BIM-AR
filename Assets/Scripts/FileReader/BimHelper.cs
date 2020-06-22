@@ -17,13 +17,12 @@ public class BimHelper
             var ifcProject = model.Instances.FirstOrDefault<IIfcProject>();
             /*
              * GetSpatialStructure(ifcProject);
-             * 好像这一行就可以代替下面所有内容
+             * 好像这一行就可以代替下面所有内容，但是要修改数据层的代码
              */
             var projectObj = new GameObject();
             var projectData = projectObj.AddComponent<ProjectData>();
             projectData.ProjectName = ifcProject.Name;
             projectData.IFCProject = ifcProject;
-            //SomeValue.project = pd;
             projectObj.name = projectData.ProjectName;
 
             //这个循环好像可以放在递归内部，看一下源码中relatedObjects这个类

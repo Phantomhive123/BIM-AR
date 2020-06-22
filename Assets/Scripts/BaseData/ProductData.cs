@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Xbim.Ifc2x3.Interfaces;
 
+/// <summary>
+/// 存储构件属性信息
+/// </summary>
 public class ProductData : MonoBehaviour
 {
     [SerializeField]
@@ -14,7 +17,7 @@ public class ProductData : MonoBehaviour
     [SerializeField]
     private bool haveSpatialStructure = false;
     [SerializeField]
-    private IIfcProduct ifcProduct;//目前看来用不到，如果用不到需要修改set方法的变量名
+    private IIfcProduct ifcProduct;
     [SerializeField]
     private List<ProductData> decomposedProducts = new List<ProductData>();
 
@@ -54,16 +57,17 @@ public class ProductData : MonoBehaviour
         set { decomposedProducts = value; }
     }
 
+    //为ProductData对象赋值
     public void SetProductData(IIfcProduct iProduct)
     {
         ProductName = iProduct.Name;
         TypeName = iProduct.GetType().Name;
-        //ThisGameObject.name = pd.ProductName + "[" + pd.TypeName + "]#" + pd.ProductGeoData.entityLabel;
         gameObject.name = ProductName + "[" + TypeName + "]#" + bimProduct.entityLabel;
-        IFCProduct = iProduct;//看需要判断删不删掉
+        IFCProduct = iProduct;
         HaveSpatialStructure = true;
     }
 
+    //绑定当前节点的子节点
     public void SetDecomposedProducts(IEnumerable<IIfcRelDecomposes> connects)
     {
         List<ProductData> pds = new List<ProductData>();
